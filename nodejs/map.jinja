@@ -1,0 +1,22 @@
+# -*- coding: utf-8 -*-
+# vim: ft=jinja
+
+{% import_yaml 'nodejs/defaults.yaml' as default_settings %}
+
+{% set os_family_map = salt['grains.filter_by']({
+        'Debian': {},
+        'RedHat': {
+            "pkg": 'nodejs',
+        },
+  }
+  , grain="os_family"
+  , merge=salt['pillar.get']('nodejs:lookup'))
+%}
+{% do default_settings.nodejs.update(os_family_map) %}
+
+{% set nodejs = salt['pillar.get'](
+        'nodejs',
+        default=default_settings.nodejs,
+        merge=True
+    )
+%}
